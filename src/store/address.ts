@@ -6,64 +6,48 @@ import {
   editAddress,
   getAddressList,
 } from '~/api/addressManagement'
+import type { AddressState } from '~/types/addressManagement'
 
-interface State {
-  addressInfoList: AddressInfo[]
-  currentAddressInfo: AddressInfo
-}
-
-export default createStore<State>({
+export default createStore<AddressState>({
   state() {
     return {
       addressInfoList: [],
-      currentAddressInfo: {
-        addressId: '',
-        name: '',
-        mobilePhone: '',
-        detailAddress: '',
-        area: '',
-        tag: 0,
-        defaultFlag: false,
-      },
+      currentAddressId: '',
     }
+  },
+
+  getters: {
+    currentAddressInfo: (state) => {
+      return state.addressInfoList.find(({ addressId }) => addressId === state.currentAddressId)
+    },
   },
 
   mutations: {
     setAddressInfoList(
       state,
-      addressInfoList: State['addressInfoList'],
+      addressInfoList: AddressState['addressInfoList'],
     ) {
       state.addressInfoList = addressInfoList
     },
 
     updateAddressInfoList(
       state,
-      payload: { index: number; addressInfo: AddressInfo },
+      addressInfo: AddressInfo,
     ) {
-      state.addressInfoList[payload.index] = payload.addressInfo
+      const index = state.addressInfoList.findIndex(({ addressId }) => addressId === addressInfo.addressId)
+      state.addressInfoList[index] = addressInfo
     },
 
     deleteAddressInfoListItem(
       state,
-      payload: number,
+      id: AddressInfo['addressId'],
     ) {
-      state.addressInfoList.splice(payload, 1)
+      const index = state.addressInfoList.findIndex(({ addressId }) => addressId === id)
+      state.addressInfoList.splice(index, 1)
     },
 
-    setCurrentAddressInfo(state, addressInfo: State['currentAddressInfo']) {
-      state.currentAddressInfo = addressInfo
-    },
-
-    resetCurrentAddressInfo(state) {
-      state.currentAddressInfo = {
-        addressId: '',
-        name: '',
-        mobilePhone: '',
-        detailAddress: '',
-        area: '',
-        tag: 0,
-        defaultFlag: false,
-      }
+    setCurrentAddressId(state, id: AddressState['currentAddressId']) {
+      state.currentAddressId = id
     },
   },
 
@@ -73,25 +57,22 @@ export default createStore<State>({
       commit('setAddressInfoList', data)
     },
 
-    async addAddress({ state, commit }, payload: AddressForm) {
+    async addAddress({ commit }, payload: AddressForm) {
       const { addressId } = await addAddress(payload)
       commit('updateAddressInfoList', {
-        index: state.addressInfoList.length,
-        addressInfo: {
-          addressId,
-          ...payload,
-        },
+        addressId,
+        ...payload,
       })
     },
 
-    async editAddress({ commit }, payload: { index: number; addressInfo: AddressInfo }) {
-      await editAddress(payload.addressInfo)
-      commit('updateAddressInfoList', payload.addressInfo)
+    async editAddress({ commit }, addressInfo: AddressInfo) {
+      await editAddress(addressInfo)
+      commit('updateAddressInfoList', addressInfo)
     },
 
-    async deleteAddress({ commit }, payload: { addressId: string; index: number }) {
-      await deleteAddress(payload.addressId)
-      commit('deleteAddressInfoListItem', payload.index)
+    async deleteAddress({ commit }, addressId: AddressInfo['addressId']) {
+      await deleteAddress(addressId)
+      commit('deleteAddressInfoListItem', addressId)
     },
   },
 })

@@ -1,16 +1,14 @@
 import axios from 'axios'
 import type { AxiosResponse } from 'axios'
-import { useRouter } from 'vue-router'
 import { Toast } from 'vant'
+import { router } from '~/router'
 import type { ResponseType } from '~/types/common'
-import 'vant/es/Toast/style'
+""
 
 export const service = axios.create({
   baseURL: 'http://localhost:5001',
   timeout: 3000,
 })
-
-export const baseURL = 'https://www.tkoath.top/agripro'
 
 service.interceptors.request.use(
   (config) => {
@@ -24,19 +22,19 @@ service.interceptors.request.use(
     return Promise.reject(new Error(err))
   },
 )
-
 const jumpToLogin = () => {
-  const router = useRouter()
   router.replace('/')
-  localStorage.removeItem('token')
 }
 
 service.interceptors.response.use(
   ({ data: { code, data, msg } }: AxiosResponse<ResponseType>) => {
     if (code === 200)
       return data
-    if (code === 401)
-      jumpToLogin()
+    if (code === 401) {
+      Toast(msg)
+      setTimeout(jumpToLogin, 1000)
+      return
+    }
     Toast(msg)
     return Promise.reject(msg)
   },

@@ -1,8 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 
-// 后续将使用webpack将组件分组 /* webpackChunkName: "组名" */
-export const constantRouterMap: Array<RouteRecordRaw> = [
+export const routes: Array<RouteRecordRaw> = [
   { path: '/', component: () => import('~/pages/index.vue') },
   {
     path: '/address/editAddress',
@@ -18,5 +17,5 @@ export const constantRouterMap: Array<RouteRecordRaw> = [
 
 export const router = createRouter({
   history: createWebHistory(),
-  routes: constantRouterMap,
+  routes,
 })

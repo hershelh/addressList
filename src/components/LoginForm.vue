@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { Toast } from 'vant'
+// import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import type { Login } from '~/types/userManagement'
 import { login } from '~/api/userManagement'
-import 'vant/es/Toast/style'
 
 const router = useRouter()
 
@@ -11,20 +12,28 @@ const loginForm = reactive<Login>({
   password: '',
 })
 
+const isSubmitButtonDisabled = ref(false)
+
 const submitLogin = async () => {
+  isSubmitButtonDisabled.value = true
   Toast.loading('登录中')
   try {
     const { token } = await login(loginForm)
     localStorage.setItem('token', token)
-    router.replace('/address/shipAddress')
+    Toast('登录成功')
+    setTimeout(() => {
+      router.replace('/address/shipAddress')
+    }, 1000)
   }
-  catch {}
+  catch {
+    isSubmitButtonDisabled.value = false
+  }
 }
 </script>
 
 <template>
   <div class="login-form">
-    <van-form class="login-form__body" @submit="submitLogin">
+    <van-form class="login-form__body" data-testid="form" @submit="submitLogin">
       <van-cell-group inset>
         <van-field
           v-model="loginForm.username"
@@ -52,8 +61,10 @@ const submitLogin = async () => {
           round
           size="large"
           color="#68cb90"
-          type="primary"
           native-type="submit"
+          type="primary"
+          data-testid="button"
+          :disabled="isSubmitButtonDisabled"
         >
           登录
         </van-button>

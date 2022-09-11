@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { Dialog, Toast } from 'vant'
 import AddressList from '~/components/AddressList.vue'
-import 'vant/es/Toast/style'
-import 'vant/es/dialog/style'
 
 const router = useRouter()
 
@@ -22,8 +20,8 @@ const logOut = () => {
     message: '确定要退出登录吗？',
   }).then(() => {
     Toast.loading('正在退出登录')
+    localStorage.removeItem('token')
     setTimeout(() => {
-      localStorage.removeItem('token')
       router.replace('/')
     }, 2000)
   })
@@ -40,16 +38,15 @@ const logOut = () => {
       right-text="退出登录"
       @click-right="logOut"
     />
-    <keep-alive>
-      <AddressList v-show="fetchStatus" data-test="address-list" @fetch="setFetchStatus" />
-    </keep-alive>
+    <AddressList v-show="fetchStatus" data-test="address-list" data-testid="list" @fetch="setFetchStatus" />
     <van-skeleton
       class="ship-address__skeleton"
+      data-testid="skeleton"
       title
       row="10"
       :loading="fetchStatus === null"
     />
-    <van-empty v-if="fetchStatus === false" data-test="address-empty" description="列表空空如也" />
+    <van-empty v-if="fetchStatus === false" data-test="address-empty" data-testid="empty" description="列表空空如也" />
     <van-button
       v-if="fetchStatus !== null"
       class="ship-address__button"

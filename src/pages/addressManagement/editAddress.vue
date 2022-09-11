@@ -5,7 +5,6 @@ const route = useRoute()
 const router = useRouter()
 
 const isEdit = route.query.isEdit
-const index = route.query.index
 
 const back = () => {
   router.back()
@@ -19,7 +18,7 @@ const back = () => {
       left-arrow
       @click-left="back"
     />
-    <AddressForm :is-edit="isEdit as string" :index="index as string" class="edit-address__form" />
+    <AddressForm :is-edit="isEdit as string" class="edit-address__form" />
   </div>
 </template>
 

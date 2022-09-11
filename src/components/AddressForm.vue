@@ -1,25 +1,37 @@
 <script setup lang="ts">
+import { reactive, ref } from 'vue'
 import { areaList } from '@vant/area-data'
 import { Toast } from 'vant'
 import type { AreaColumnOption } from 'vant'
-import addressStore from '~/store/address'
-import 'vant/es/Toast/style'
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 
 const props = defineProps<{
   isEdit: string
-  index?: string
 }>()
 
 const router = useRouter()
+const store = useStore()
 
-const addressForm = computed(() => addressStore.state.currentAddressInfo)
+const addressForm = props.isEdit === 'true'
+  ? reactive({ ...store.getters.currentAddressInfo })
+  : reactive({
+    name: '',
+    mobilePhone: '',
+    detailAddress: '',
+    area: '',
+    tag: 0,
+    defaultFlag: false,
+  })
 
 const isShowAreaPicker = ref(false)
+
 // 确认选择省市区后，获取各个省市区的 name，并传入 addressForm 对象
 const confirmArea = (area: AreaColumnOption[]) => {
-  addressForm.value.area = area.reduce((preName, { name }) => preName + name, '')
+  addressForm.area = area.reduce((preName, { name }) => preName + name, '')
   isShowAreaPicker.value = false
 }
+
 // 表单验证
 const formValidator = {
   name: (val: string) => {
@@ -29,7 +41,7 @@ const formValidator = {
   },
   mobilePhone: (val: string) => {
     const phoneReg = /^1[3456789]\d{9}$/
-    if (!phoneReg.test(`${addressForm.value.mobilePhone}`))
+    if (!phoneReg.test(`${addressForm.mobilePhone}`))
       return '请输入正确的手机号码'
     return true
   },
@@ -45,31 +57,43 @@ const formValidator = {
   },
 }
 
+const isSubmitButtonDisabled = ref(false)
+
 // 提交表单
 const submitAddressForm = async () => {
+  isSubmitButtonDisabled.value = true
   Toast.loading('保存中')
 
   if (props.isEdit === 'true') {
-    await addressStore.dispatch('editAddress', { index: parseInt(props.index as string), addressInfo: addressForm.value })
-    Toast('保存成功')
+    try {
+      await store.dispatch('editAddress', addressForm)
+      Toast('保存成功')
+      setTimeout(() => {
+        router.back()
+      }, 1000)
+    }
+    catch {
+      isSubmitButtonDisabled.value = false
+    }
   }
   else {
-    await addressStore.dispatch('addAddress', addressForm.value)
-    Toast('添加成功')
+    try {
+      await store.dispatch('addAddress', addressForm)
+      Toast('添加成功')
+      setTimeout(() => {
+        router.back()
+      }, 1000)
+    }
+    catch {
+      isSubmitButtonDisabled.value = false
+    }
   }
-  setTimeout(() => {
-    router.back()
-  }, 1000)
 }
-
-onBeforeUnmount(() => {
-  addressStore.commit('resetCurrentAddressInfo')
-})
 </script>
 
 <template>
   <div class="address-form">
-    <van-form class="address-form__body" @submit="submitAddressForm">
+    <van-form class="address-form__body" data-testid="form" @submit="submitAddressForm">
       <van-cell-group inset>
         <van-field
           v-model="addressForm.name"
@@ -146,6 +170,7 @@ onBeforeUnmount(() => {
           color="#68cb90"
           type="primary"
           native-type="submit"
+          :disabled="isSubmitButtonDisabled"
         >
           保存
         </van-button>

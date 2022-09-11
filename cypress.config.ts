@@ -1,6 +1,5 @@
 import { defineConfig } from 'cypress'
 import axios from 'axios'
-import codeCoverageTask from '@cypress/code-coverage/task'
 
 const config = defineConfig({
   env: {
@@ -22,9 +21,6 @@ const config = defineConfig({
           return data
         },
       })
-
-      codeCoverageTask(on, config)
-      return config
     },
   },
 })

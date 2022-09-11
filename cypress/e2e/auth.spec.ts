@@ -1,4 +1,4 @@
-describe('登录', () => {
+describe('用户认证管理', () => {
   beforeEach(() => {
     cy.visit('/')
     cy.getByTest('login__nav-bar').should('exist')
@@ -9,7 +9,6 @@ describe('登录', () => {
     cy.getByTest('login__username-input').type('jeanmay')
     cy.getByTest('login__password-input').type('password123456')
     cy.getByTest('login__submit-button').click()
-    cy.contains('登录中')
     cy.url().should('include', '/address/shipAddress')
   })
 
@@ -34,11 +33,26 @@ describe('登录', () => {
     cy.getByTest('login__username-input').type('jeanmay')
     cy.getByTest('login__password-input').type('password123456')
     cy.getByTest('login__submit-button').click()
-    cy.contains('登录中')
     cy.url().should('include', '/address/shipAddress')
 
     cy.visit('/')
     cy.contains('自动登录中')
     cy.url().should('include', '/address/shipAddress')
+  })
+
+  it('未登录时访问地址页面并发起请求时提示未登录并重定向到登录页面', () => {
+    cy.visit('/address/shipAddress')
+    cy.contains('未携带用户凭证')
+    cy.url().should('include', '/')
+  })
+
+  it('退出登录', () => {
+    cy.loginByRequest()
+    cy.visit('/address/shipAddress')
+
+    cy.contains('退出登录').click()
+    cy.contains('button', '确认').click()
+    cy.contains('正在退出登录')
+    cy.url().should('include', '/')
   })
 })

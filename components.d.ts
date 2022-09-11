@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     AddressForm: typeof import('./src/components/AddressForm.vue')['default']
     AddressList: typeof import('./src/components/AddressList.vue')['default']
     AddressListItem: typeof import('./src/components/AddressListItem.vue')['default']
+    Ex: typeof import('./src/components/Ex.vue')['default']
     LoginForm: typeof import('./src/components/LoginForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

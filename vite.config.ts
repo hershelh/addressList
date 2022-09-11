@@ -13,6 +13,7 @@ export default defineConfig({
     alias: {
       '~/': `${path.resolve(__dirname, 'src')}/`,
     },
+    conditions: process.env.VITEST ? ['node'] : [],
   },
   plugins: [
     Vue({
@@ -47,5 +48,9 @@ export default defineConfig({
 
   test: {
     environment: 'jsdom',
+    deps: {
+      inline: ['vant'],
+    },
+    setupFiles: `${path.resolve(__dirname, 'test/vitest-setup.ts')}/`,
   },
 })

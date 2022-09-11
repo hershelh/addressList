@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { Toast } from 'vant'
+import { useRouter } from 'vue-router'
 import LoginForm from '~/components/LoginForm.vue'
-import 'vant/es/Toast/style'
 
 const router = useRouter()
 
-// if (localStorage.getItem('token')) {
-//   Toast.loading('自动登录中')
-//   setTimeout(() => {
-//     router.replace('/address/shipAddress')
-//   }, 2000)
-// }
+if (localStorage.getItem('token')) {
+  Toast.loading('自动登录中')
+  setTimeout(() => {
+    router.replace('/address/shipAddress')
+  }, 2000)
+}
 </script>
 
 <template>

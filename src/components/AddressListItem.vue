@@ -1,37 +1,39 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import type { AddressInfo } from '~/types/addressManagement'
-import addressStore from '~/store/address'
 import { encodePhoneNumber } from '~/utils'
 
 const props = defineProps<{
   addressInfo: AddressInfo
-  index: number
 }>()
 const emits = defineEmits<{
   (e: 'longTouch'): void
 }>()
 
+const router = useRouter()
+const addressStore = useStore()
+
 // 抛出长按事件
-let loop: NodeJS.Timeout
+let loop: number
 const touchStart = () => {
-  clearTimeout(loop)
   loop = setTimeout(() => {
     emits('longTouch')
   }, 1000)
 }
-const touchEnd = () => {
+
+const clearTimer = () => {
   clearTimeout(loop)
 }
 
-const router = useRouter()
 const toEditAddress = () => {
-  addressStore.commit('setCurrentAddressInfo', { ...props.addressInfo })
-  router.push(`/address/editAddress?isEdit=true&index=${props.index}`)
+  addressStore.commit('setCurrentAddressId', props.addressInfo.addressId)
+  router.push('/address/editAddress?isEdit=true')
 }
 </script>
 
 <template>
-  <div class="address" @mousedown="touchStart" @mouseup="touchEnd" @touchstart="touchStart" @touchend="touchEnd" @click="toEditAddress">
+  <div class="address" data-testid="item" @touchstart="touchStart" @touchend="clearTimer" @touchmove="clearTimer" @click="toEditAddress">
     <div class="address__header">
       <div class="address__header__tag-box">
         <van-tag
@@ -53,7 +55,7 @@ const toEditAddress = () => {
         <span
           class="address__header__title van-ellipsis"
         >
-          {{ addressInfo.area }}
+          {{ props.addressInfo.area }}
         </span>
       </div>
     </div>
@@ -61,18 +63,18 @@ const toEditAddress = () => {
       <div class="address__body__detail">
         <span class="address__body__detail__address van-multi-ellipsis--l2">
           {{
-            addressInfo.detailAddress
+            props.addressInfo.detailAddress
           }}
         </span>
         <span class="address__body__detail__name van-ellipsis">
           {{
-            addressInfo.name
+            props.addressInfo.name
           }}
         </span>
         <span
           class="address__body__detail__phone-number"
         >
-          {{ encodePhoneNumber(`${addressInfo.mobilePhone}`) }}
+          {{ encodePhoneNumber(`${props.addressInfo.mobilePhone}`) }}
         </span>
       </div>
     </div>
