@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from 'vitest'
-import { fireEvent, getByText as getByContainerText, render, waitFor } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import AddressForm from '~/components/AddressForm.vue'
@@ -43,7 +43,7 @@ describe('AddressForm', () => {
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
-      await fireEvent.click(getByContainerText(document.body, '确认'))
+      await fireEvent.click(screen.getByText('确认'))
       await fireEvent.update(getByPlaceholderText('详细地址'), addressInfo.detailAddress)
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
@@ -72,7 +72,7 @@ describe('AddressForm', () => {
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
-      await fireEvent.click(getByContainerText(document.body, '确认'))
+      await fireEvent.click(screen.getByText('确认'))
       await fireEvent.update(getByPlaceholderText('详细地址'), addressInfo.detailAddress)
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
@@ -127,7 +127,7 @@ describe('AddressForm', () => {
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
-      await fireEvent.click(getByContainerText(document.body, '确认'))
+      await fireEvent.click(screen.getByText('确认'))
       await fireEvent.update(getByPlaceholderText('详细地址'), addressInfo.detailAddress)
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
@@ -166,7 +166,7 @@ describe('AddressForm', () => {
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
-      await fireEvent.click(getByContainerText(document.body, '确认'))
+      await fireEvent.click(screen.getByText('确认'))
       await fireEvent.update(getByPlaceholderText('详细地址'), addressInfo.detailAddress)
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))

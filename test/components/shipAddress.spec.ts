@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { findByText as findByContainerText, fireEvent, render, waitFor } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'
 import ShipAddress from '~/pages/addressManagement/shipAddress.vue'
@@ -50,7 +50,7 @@ describe('shipAddress', () => {
     expect(replace).not.toHaveBeenCalled()
 
     await fireEvent.click(getByText('退出登录'))
-    await fireEvent.click(await findByContainerText(document.body, '确认'))
+    await fireEvent.click(screen.getByText('确认'))
     vi.advanceTimersByTime(2000)
 
     expect(localStorage.getItem('token')).toBeNull()
