@@ -7,16 +7,24 @@ import AddressForm from '~/components/AddressForm.vue'
 vi.mock('vue-router')
 vi.mock('vuex')
 
-describe('AddressForm', () => {
-  const addressInfo = {
-    name: '李先生',
-    mobilePhone: '13511334455',
-    detailAddress: '中山路阳光小区22号',
-    area: '北京市北京市东城区',
-    tag: 1,
-    defaultFlag: true,
-  }
+const addressInfo = {
+  name: '李先生',
+  mobilePhone: '13511334455',
+  detailAddress: '中山路阳光小区22号',
+  area: '北京市北京市东城区',
+  tag: 1,
+  defaultFlag: true,
+}
 
+const renderAddressForm = (isEdit = 'false') => {
+  return render(AddressForm, {
+    props: {
+      isEdit,
+    },
+  })
+}
+
+describe('AddressForm', () => {
   afterEach(() => {
     vi.resetAllMocks()
   })
@@ -29,11 +37,7 @@ describe('AddressForm', () => {
       }).mockImplementation(() => ({
         dispatch,
       }))
-      const { getByPlaceholderText, getByText, getByRole, getByTestId } = render(AddressForm, {
-        props: {
-          isEdit: 'false',
-        },
-      })
+      const { getByPlaceholderText, getByText, getByRole, getByTestId } = renderAddressForm()
       expect(dispatch).toHaveBeenCalledTimes(0)
 
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
@@ -45,7 +49,7 @@ describe('AddressForm', () => {
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
 
-      await waitFor(() => expect(dispatch).toHaveBeenCalledTimes(1))
+      expect(dispatch).toHaveBeenCalledTimes(1)
       expect(dispatch).toHaveBeenCalledWith('addAddress', addressInfo)
     })
 
@@ -62,11 +66,7 @@ describe('AddressForm', () => {
       }).mockImplementation(() => ({
         dispatch,
       }))
-      const { getByPlaceholderText, getByText, getByRole, getByTestId } = render(AddressForm, {
-        props: {
-          isEdit: 'false',
-        },
-      })
+      const { getByPlaceholderText, getByText, getByRole, getByTestId } = renderAddressForm()
       expect(back).not.toHaveBeenCalled()
 
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
@@ -77,15 +77,33 @@ describe('AddressForm', () => {
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
-      // 确保定时器被调用
-      await waitFor(() => expect(dispatch).toHaveBeenCalled())
       vi.advanceTimersByTime(1000)
 
-      await waitFor(() => expect(back).toHaveBeenCalledTimes(1))
+      expect(back).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('修改收货地址', () => {
+    test('展示待修改表单的信息', () => {
+      vi.mocked(useStore, {
+        partial: true,
+      }).mockImplementation(() => ({
+        getters: {
+          currentAddressInfo: addressInfo,
+        },
+      }))
+      const { getByRole, getByDisplayValue, getAllByRole } = renderAddressForm('true')
+
+      expect(getByDisplayValue(addressInfo.name)).toBeInTheDocument()
+      expect(getByDisplayValue(addressInfo.mobilePhone)).toBeInTheDocument()
+      expect(getByDisplayValue(addressInfo.area)).toBeInTheDocument()
+      expect(getAllByRole('radio')[1]).toBeChecked()
+      expect(getAllByRole('radio')[0]).not.toBeChecked()
+      expect(getAllByRole('radio')[2]).not.toBeChecked()
+      expect(getAllByRole('radio')[3]).not.toBeChecked()
+      expect(getByRole('switch')).toBeChecked()
+    })
+
     test('正确修改表单并提交后分发 store 的 editAddress 事件', async () => {
       const dispatch = vi.fn()
       vi.mocked(useStore, {
@@ -103,11 +121,7 @@ describe('AddressForm', () => {
         },
         dispatch,
       }))
-      const { getByPlaceholderText, getByText, getByRole, getByTestId } = render(AddressForm, {
-        props: {
-          isEdit: 'true',
-        },
-      })
+      const { getByPlaceholderText, getByText, getByRole, getByTestId } = renderAddressForm('true')
       expect(dispatch).toHaveBeenCalledTimes(0)
 
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
@@ -119,7 +133,7 @@ describe('AddressForm', () => {
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
 
-      await waitFor(() => expect(dispatch).toHaveBeenCalledTimes(1))
+      expect(dispatch).toHaveBeenCalledTimes(1)
       expect(dispatch).toHaveBeenCalledWith('editAddress', addressInfo)
     })
 
@@ -146,11 +160,7 @@ describe('AddressForm', () => {
         },
         dispatch,
       }))
-      const { getByPlaceholderText, getByText, getByRole, getByTestId } = render(AddressForm, {
-        props: {
-          isEdit: 'true',
-        },
-      })
+      const { getByPlaceholderText, getByText, getByRole, getByTestId } = renderAddressForm('true')
       expect(back).not.toHaveBeenCalled()
 
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
@@ -161,39 +171,29 @@ describe('AddressForm', () => {
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
-      // 确保定时器被调用
-      await waitFor(() => expect(dispatch).toHaveBeenCalled())
       vi.advanceTimersByTime(1000)
 
-      await waitFor(() => expect(back).toHaveBeenCalledTimes(1))
+      expect(back).toHaveBeenCalledTimes(1)
     })
   })
 
   describe('表单验证', () => {
     test('未填写表单项时会进行提示', async () => {
-      const { getByPlaceholderText, queryByText, findByText } = render(AddressForm, {
-        props: {
-          isEdit: 'false',
-        },
-      })
+      const { getByPlaceholderText, queryByText, getByText } = renderAddressForm()
       expect(queryByText('请填写收货人姓名')).toBeNull()
       expect(queryByText('请输入正确的手机号码')).toBeNull()
       expect(queryByText('请输入详细地址')).toBeNull()
 
       await fireEvent.touch(getByPlaceholderText('请填写收货人姓名'))
-      await findByText('请填写收货人姓名')
+      expect(getByText('请填写收货人姓名')).toBeInTheDocument()
       await fireEvent.touch(getByPlaceholderText('手机号码'))
-      await findByText('请输入正确的手机号码')
+      expect(getByText('请输入正确的手机号码')).toBeInTheDocument()
       await fireEvent.touch(getByPlaceholderText('详细地址'))
-      await findByText('请输入详细地址')
+      expect(getByText('请输入详细地址')).toBeInTheDocument()
     })
 
     test('提交时未输入表单项会进行提示', async () => {
-      const { findByText, queryByText, getByTestId } = render(AddressForm, {
-        props: {
-          isEdit: 'false',
-        },
-      })
+      const { getByText, queryByText, getByTestId } = renderAddressForm()
       expect(queryByText('请填写收货人姓名')).toBeNull()
       expect(queryByText('请输入正确的手机号码')).toBeNull()
       expect(queryByText('请选择所在地区')).toBeNull()
@@ -201,10 +201,10 @@ describe('AddressForm', () => {
 
       await fireEvent.submit(getByTestId('form'))
 
-      await findByText('请填写收货人姓名')
-      await findByText('请输入正确的手机号码')
-      await findByText('请选择所在地区')
-      await findByText('请输入详细地址')
+      expect(getByText('请填写收货人姓名')).toBeInTheDocument()
+      expect(getByText('请输入正确的手机号码')).toBeInTheDocument()
+      expect(getByText('请选择所在地区')).toBeInTheDocument()
+      expect(getByText('请输入详细地址')).toBeInTheDocument()
     })
   })
 })

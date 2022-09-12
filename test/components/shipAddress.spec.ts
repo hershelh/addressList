@@ -6,6 +6,26 @@ import ShipAddress from '~/pages/addressManagement/shipAddress.vue'
 
 vi.mock('vue-router')
 
+const renderShipAddress = (fetchStatues = true) => {
+  const AddressList = defineComponent({
+    emits: ['fetch'],
+    setup(props, { emit }) {
+      const fetch = async () => {
+        emit('fetch', fetchStatues)
+      }
+      fetch()
+    },
+    template: '<div />',
+  })
+  return render(ShipAddress, {
+    global: {
+      stubs: {
+        AddressList,
+      },
+    },
+  })
+}
+
 describe('shipAddress', () => {
   const push = vi.fn()
   const replace = vi.fn()
@@ -25,13 +45,7 @@ describe('shipAddress', () => {
 
   test('退出登录', async () => {
     localStorage.setItem('token', '12345')
-    const { getByText } = render(ShipAddress, {
-      global: {
-        stubs: {
-          AddressList: true,
-        },
-      },
-    })
+    const { getByText } = renderShipAddress()
     expect(localStorage.getItem('token')).not.toBeNull()
     expect(replace).not.toHaveBeenCalled()
 
@@ -45,26 +59,9 @@ describe('shipAddress', () => {
   })
 
   test('接收 AddressList 的 fetch 事件，若该事件参数为 true，则显示 AddressList 和新增地址按钮、移除 skeleton 和 empty', async () => {
-    // eslint-disable-next-line vue/one-component-per-file
-    const AddressList = defineComponent({
-      emits: ['fetch'],
-      setup(props, { emit }) {
-        const fetch = async () => {
-          emit('fetch', true)
-        }
-        fetch()
-      },
-      template: '<div />',
-    })
-    const { getByTestId, queryByTestId, queryByText } = render(ShipAddress, {
-      global: {
-        stubs: {
-          AddressList,
-        },
-      },
-    })
+    const { getByTestId, queryByTestId, queryByText } = renderShipAddress()
     expect(getByTestId('list')).not.toBeVisible()
-    getByTestId('skeleton')
+    expect(getByTestId('skeleton')).toBeInTheDocument()
     expect(queryByTestId('empty')).toBeNull()
     expect(queryByText('新增地址')).toBeNull()
 
@@ -75,26 +72,9 @@ describe('shipAddress', () => {
   })
 
   test('接收 AddressList 的 fetch 事件，若该事件参数为 false，则显示新增地址按钮和 empty，移除 skeleton，隐藏 AddressList', async () => {
-    // eslint-disable-next-line vue/one-component-per-file
-    const AddressList = defineComponent({
-      emits: ['fetch'],
-      setup(props, { emit }) {
-        const fetch = async () => {
-          emit('fetch', false)
-        }
-        fetch()
-      },
-      template: '<div />',
-    })
-    const { getByTestId, queryByTestId, queryByText } = render(ShipAddress, {
-      global: {
-        stubs: {
-          AddressList,
-        },
-      },
-    })
+    const { getByTestId, queryByTestId, queryByText } = renderShipAddress(false)
     expect(getByTestId('list')).not.toBeVisible()
-    getByTestId('skeleton')
+    expect(getByTestId('skeleton')).toBeInTheDocument()
     expect(queryByTestId('empty')).toBeNull()
     expect(queryByText('新增地址')).toBeNull()
 
@@ -105,21 +85,7 @@ describe('shipAddress', () => {
   })
 
   test('点击新增地址按钮调用 router.push()', async () => {
-    // eslint-disable-next-line vue/one-component-per-file
-    const AddressList = defineComponent({
-      emits: ['fetch'],
-      setup(props, { emit }) {
-        emit('fetch', true)
-      },
-      template: '<div/>',
-    })
-    const { findByText } = render(ShipAddress, {
-      global: {
-        stubs: {
-          AddressList,
-        },
-      },
-    })
+    const { findByText } = renderShipAddress()
     expect(push).not.toHaveBeenCalled()
 
     await fireEvent.click(await findByText('新增地址'))

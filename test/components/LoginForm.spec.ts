@@ -35,7 +35,8 @@ describe('LoginForm', () => {
       await fireEvent.update(getByPlaceholderText('密码'), 'password123456')
       await fireEvent.submit(getByTestId('form'))
 
-      await waitFor(() => expect(localStorage.getItem('token')).toBe('acbdefgfedbca123'))
+      // await waitFor(() => expect(localStorage.getItem('token')).toBe('acbdefgfedbca123'))
+      expect(localStorage.getItem('token')).toBe('acbdefgfedbca123')
     })
 
     test('输入用户名和密码进行登录可以登录成功, 1 秒后调用 router.replace()', async () => {
@@ -46,10 +47,11 @@ describe('LoginForm', () => {
       await fireEvent.update(getByPlaceholderText('密码'), 'password123456')
       await fireEvent.submit(getByTestId('form'))
       // 确保定时器已调用
-      await waitFor(() => expect(localStorage.getItem('token')).not.toBeNull())
+      // await waitFor(() => expect(localStorage.getItem('token')).not.toBeNull())
       vi.advanceTimersByTime(1000)
 
-      await waitFor(() => expect(replace).toHaveBeenCalledTimes(1))
+      // await waitFor(() => expect(replace).toHaveBeenCalledTimes(1))
+      expect(replace).toHaveBeenCalledTimes(1)
       expect(replace).toHaveBeenCalledWith('/address/shipAddress')
     })
 
@@ -61,7 +63,8 @@ describe('LoginForm', () => {
       await fireEvent.update(getByPlaceholderText('密码'), 'password123456')
       await fireEvent.submit(getByTestId('form'))
 
-      await waitFor(() => expect(getByTestId('button')).toBeDisabled())
+      // await waitFor(() => expect(getByTestId('button')).toBeDisabled())
+      expect(getByTestId('button')).toBeDisabled()
     })
   })
 
@@ -72,9 +75,9 @@ describe('LoginForm', () => {
       expect(queryByText('请填写密码')).toBeNull()
 
       await fireEvent.touch(getByPlaceholderText('用户名'))
-      getByText('请填写用户名')
+      expect(getByText('请填写用户名')).toBeInTheDocument()
       await fireEvent.touch(getByPlaceholderText('密码'))
-      getByText('请填写密码')
+      expect(getByText('请填写密码')).toBeInTheDocument()
     })
 
     test('提交时未输入用户名或密码会进行提示', async () => {
@@ -84,8 +87,8 @@ describe('LoginForm', () => {
 
       await fireEvent.click(getByText('登录'))
 
-      getByText('请填写用户名')
-      getByText('请填写密码')
+      expect(getByText('请填写用户名')).toBeInTheDocument()
+      expect(getByText('请填写密码')).toBeInTheDocument()
     })
   })
 })
