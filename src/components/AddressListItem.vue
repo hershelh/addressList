@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { useAddressStore } from '~/stores/address'
 import type { AddressInfo } from '~/types/addressManagement'
 import { encodePhoneNumber } from '~/utils'
 
@@ -12,7 +12,7 @@ const emits = defineEmits<{
 }>()
 
 const router = useRouter()
-const addressStore = useStore()
+const addressStore = useAddressStore()
 
 // 抛出长按事件
 let loop: number
@@ -27,7 +27,7 @@ const clearTimer = () => {
 }
 
 const toEditAddress = () => {
-  addressStore.commit('setCurrentAddressId', props.addressInfo.addressId)
+  addressStore.currentAddressId = props.addressInfo.addressId
   router.push('/address/editAddress?isEdit=true')
 }
 </script>

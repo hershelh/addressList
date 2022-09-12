@@ -28,8 +28,3 @@ export interface AddAddressResponseData extends AddressInfo {
 }
 
 export type GetAddressListResponseData = AddressInfo[]
-
-export interface AddressState {
-  addressInfoList: AddressInfo[]
-  currentAddressId: AddressInfo['addressId']
-}

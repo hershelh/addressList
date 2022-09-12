@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Toast } from 'vant'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import type { Login } from '~/types/userManagement'
 import { login } from '~/api/userManagement'

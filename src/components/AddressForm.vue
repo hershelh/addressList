@@ -1,34 +1,37 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { areaList } from '@vant/area-data'
 import { Toast } from 'vant'
 import type { AreaColumnOption } from 'vant'
-import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
+import { useAddressStore } from '~/stores/address'
+import type { AddressInfo } from '~/types/addressManagement'
 
 const props = defineProps<{
   isEdit: string
 }>()
 
 const router = useRouter()
-const store = useStore()
+const store = useAddressStore()
 
-const addressForm = props.isEdit === 'true'
-  ? reactive({ ...store.getters.currentAddressInfo })
-  : reactive({
-    name: '',
-    mobilePhone: '',
-    detailAddress: '',
-    area: '',
-    tag: 0,
-    defaultFlag: false,
-  })
+const addressForm = ref<AddressInfo>({
+  addressId: '',
+  name: '',
+  mobilePhone: '',
+  detailAddress: '',
+  area: '',
+  tag: 0,
+  defaultFlag: false,
+})
+
+if (props.isEdit === 'true')
+  addressForm.value = { ...store.currentAddressInfo as AddressInfo }
 
 const isShowAreaPicker = ref(false)
 
 // 确认选择省市区后，获取各个省市区的 name，并传入 addressForm 对象
 const confirmArea = (area: AreaColumnOption[]) => {
-  addressForm.area = area.reduce((preName, { name }) => preName + name, '')
+  addressForm.value.area = area.reduce((preName, { name }) => preName + name, '')
   isShowAreaPicker.value = false
 }
 
@@ -41,7 +44,7 @@ const formValidator = {
   },
   mobilePhone: (val: string) => {
     const phoneReg = /^1[3456789]\d{9}$/
-    if (!phoneReg.test(`${addressForm.mobilePhone}`))
+    if (!phoneReg.test(`${addressForm.value.mobilePhone}`))
       return '请输入正确的手机号码'
     return true
   },
@@ -66,7 +69,7 @@ const submitAddressForm = async () => {
 
   if (props.isEdit === 'true') {
     try {
-      await store.dispatch('editAddress', addressForm)
+      await store.editAddress(addressForm.value)
       Toast('保存成功')
       setTimeout(() => {
         router.back()
@@ -78,7 +81,7 @@ const submitAddressForm = async () => {
   }
   else {
     try {
-      await store.dispatch('addAddress', addressForm)
+      await store.addAddress(addressForm.value)
       Toast('添加成功')
       setTimeout(() => {
         router.back()

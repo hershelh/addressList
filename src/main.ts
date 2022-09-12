@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 // import { createRouter, createWebHashHistory } from 'vue-router'
+import { createPinia } from 'pinia'
 import App from './App.vue'
-import store from '~/store/address'
 // import routes from '~pages'
 import { router } from '~/router'
 import './styles/main.css'
@@ -14,6 +14,6 @@ app.config.errorHandler = () => {}
 //   history: createWebHashHistory(import.meta.env.BASE_URL),
 //   routes,
 // })
-app.use(store)
+app.use(createPinia())
 app.use(router)
 app.mount('#app')

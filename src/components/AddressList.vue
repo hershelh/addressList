@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { Dialog, Toast } from 'vant'
-import { useStore } from 'vuex'
 import AddressListItem from './AddressListItem.vue'
-import type { AddressState } from '~/types/addressManagement'
+import { useAddressStore } from '~/stores/address'
 
 const emits = defineEmits<{
   (e: 'fetch', fetchStatus: boolean): void
 }>()
 
-const addressStore = useStore<AddressState>()
+const addressStore = useAddressStore()
 
-const addressInfoList = computed(() => addressStore.state.addressInfoList)
+const addressInfoList = computed(() => addressStore.addressInfoList)
 watch(
   () => addressInfoList.value.length,
   (val) => {
@@ -19,7 +18,7 @@ watch(
 )
 
 // 获取地址列表
-addressStore.dispatch('getAddressInfoList')
+addressStore.getAddressInfoList()
   .then(() => {
     emits('fetch', !!addressInfoList.value.length)
   })
@@ -33,7 +32,7 @@ const deleteAddressListItem = (addressId: string) => {
     message: '确认删除？',
   }).then(async () => {
     Toast.loading('删除中...')
-    await addressStore.dispatch('deleteAddress', addressId)
+    await addressStore.deleteAddress(addressId)
     Toast('删除成功! ')
   })
     .catch(() => {

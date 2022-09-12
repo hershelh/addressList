@@ -4,15 +4,5 @@
     "password": "password123456",
     "token": "acbdefgfedbca123"
   },
-  "address": [
-    {
-      "defaultFlag": true,
-      "name": "啊啊",
-      "mobilePhone": "13411223344",
-      "detailAddress": "确定",
-      "area": "北京市北京市东城区",
-      "tag": 2,
-      "addressId": "1"
-    }
-  ]
+  "address": []
 }
