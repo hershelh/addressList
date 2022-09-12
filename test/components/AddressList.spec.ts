@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import { fireEvent, getByText as getByContainerText, render, waitFor } from '@testing-library/vue'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { createStore } from 'vuex'
 import type * as Vuex from 'vuex'
 import { defineComponent } from 'vue'
@@ -14,6 +14,41 @@ describe('AddressList', () => {
   }
   let store: Vuex.Store<State>
   let mockedAddressInfoList: AddressInfo[] = []
+
+  const renderAddressList = (stubs = false) => {
+    if (stubs) {
+      const AddressListItem = defineComponent({
+        emits: ['longTouch'],
+        setup(props, { emit }) {
+          const emitLongTouch = async () => {
+            emit('longTouch')
+          }
+          emitLongTouch()
+        },
+        template: '<div />',
+      })
+
+      return render(AddressList, {
+        global: {
+          provide: {
+            store,
+          },
+          stubs: {
+            AddressListItem,
+          },
+        },
+      })
+    }
+    else {
+      return render(AddressList, {
+        global: {
+          provide: {
+            store,
+          },
+        },
+      })
+    }
+  }
 
   beforeEach(() => {
     mockedAddressInfoList = [
@@ -65,52 +100,28 @@ describe('AddressList', () => {
   })
 
   test('获取并展示地址列表信息', async () => {
-    const { findAllByTestId } = render(AddressList, {
-      global: {
-        provide: {
-          store,
-        },
-      },
-    })
+    const { findAllByTestId } = renderAddressList()
 
     expect(await findAllByTestId('item')).toHaveLength(3)
   })
 
   test('获取地址列表后，会抛出 fetch 事件，如果列表不为空，参数为 true', async () => {
-    const { emitted } = render(AddressList, {
-      global: {
-        provide: {
-          store,
-        },
-      },
-    })
+    const { emitted } = renderAddressList()
 
-    await waitFor(() => expect(emitted()).toHaveProperty('fetch'))
-    expect(emitted('fetch')[0]).toEqual([true])
+    await waitFor(() => expect(emitted('fetch')).toHaveLength(2))
+    expect(emitted('fetch')[1]).toEqual([true])
   })
 
   test('获取地址列表后，会抛出 fetch 事件，如果列表为空，参数为 false', async () => {
     mockedAddressInfoList.length = 0
-    const { emitted } = render(AddressList, {
-      global: {
-        provide: {
-          store,
-        },
-      },
-    })
+    const { emitted } = renderAddressList()
 
-    await waitFor(() => expect(emitted()).toHaveProperty('fetch'))
+    await waitFor(() => expect(emitted('fetch')).toHaveLength(1))
     expect(emitted('fetch')[0]).toEqual([false])
   })
 
   test('地址列表项变化时，会抛出 fetch 事件，如果列表项数减少到 0 ，事件参数为 false ，否则为 true', async () => {
-    const { emitted } = render(AddressList, {
-      global: {
-        provide: {
-          store,
-        },
-      },
-    })
+    const { emitted } = renderAddressList()
     await waitFor(() => expect(emitted('fetch')).toHaveLength(2))
 
     store.state.addressInfoList.pop()
@@ -128,61 +139,21 @@ describe('AddressList', () => {
 
   test('监听到 Item 组件的 longTouch 事件后弹出弹窗，点击确定即可删除该 Item', async () => {
     mockedAddressInfoList.splice(0, 2)
-    // eslint-disable-next-line vue/one-component-per-file
-    const AddressListItem = defineComponent({
-      emits: ['longTouch'],
-      setup(props, { emit }) {
-        const emitLongTouch = async () => {
-          emit('longTouch')
-        }
-        emitLongTouch()
-      },
-      template: '<div />',
-    })
-    const { findAllByTestId, queryAllByTestId } = render(AddressList, {
-      global: {
-        provide: {
-          store,
-        },
-        stubs: {
-          AddressListItem,
-        },
-      },
-    })
+    const { findAllByTestId, queryAllByTestId } = renderAddressList(true)
     expect(await findAllByTestId('item')).toHaveLength(1)
 
-    await fireEvent.click(getByContainerText(document.body, '确认'))
+    await fireEvent.click(screen.getByText('确认'))
 
-    await waitFor(() => expect(queryAllByTestId('item')).toHaveLength(0))
+    expect(queryAllByTestId('item')).toHaveLength(0)
   })
 
   test('监听到 Item 组件的 longTouch 事件后弹出弹窗，点击取消不会删除该列表项', async () => {
     mockedAddressInfoList.splice(0, 2)
-    // eslint-disable-next-line vue/one-component-per-file
-    const AddressListItem = defineComponent({
-      emits: ['longTouch'],
-      setup(props, { emit }) {
-        const emitLongTouch = async () => {
-          emit('longTouch')
-        }
-        emitLongTouch()
-      },
-      template: '<div />',
-    })
-    const { findAllByTestId, queryAllByTestId } = render(AddressList, {
-      global: {
-        provide: {
-          store,
-        },
-        stubs: {
-          AddressListItem,
-        },
-      },
-    })
+    const { findAllByTestId, queryAllByTestId } = renderAddressList(true)
     expect(await findAllByTestId('item')).toHaveLength(1)
 
-    await fireEvent.click(getByContainerText(document.body, '取消'))
+    await fireEvent.click(screen.getByText('取消'))
 
-    await waitFor(() => expect(queryAllByTestId('item')).toHaveLength(1))
+    expect(queryAllByTestId('item')).toHaveLength(1)
   })
 })

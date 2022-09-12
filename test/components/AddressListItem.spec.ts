@@ -17,27 +17,31 @@ vi.mock('vuex', () => ({
   }),
 }))
 
-describe('AddressListItem', () => {
-  const addressInfo = {
-    addressId: '1',
-    name: '李先生',
-    mobilePhone: '13511334455',
-    detailAddress: '中山路阳光小区22号',
-    area: '广东省广州市天河区',
-    tag: 1,
-    defaultFlag: true,
-  }
+const addressInfo = {
+  addressId: '1',
+  name: '李先生',
+  mobilePhone: '13511334455',
+  detailAddress: '中山路阳光小区22号',
+  area: '广东省广州市天河区',
+  tag: 1,
+  defaultFlag: true,
+}
 
+const renderAddressListItem = () => {
+  return render(AddressListItem, {
+    props: {
+      addressInfo,
+    },
+  })
+}
+
+describe('AddressListItem', () => {
   afterEach(() => {
     vi.clearAllMocks()
   })
 
   test('展示地址信息', () => {
-    const { html } = render(AddressListItem, {
-      props: {
-        addressInfo,
-      },
-    })
+    const { html } = renderAddressListItem()
 
     expect(html()).toContain(addressInfo.name)
     expect(html()).toContain(encodePhoneNumber(addressInfo.mobilePhone))
@@ -48,11 +52,7 @@ describe('AddressListItem', () => {
   })
 
   test('点击后调用 router.push()', async () => {
-    const { getByTestId } = render(AddressListItem, {
-      props: {
-        addressInfo,
-      },
-    })
+    const { getByTestId } = renderAddressListItem()
     expect(push).not.toHaveBeenCalled()
 
     await fireEvent.click(getByTestId('item'))
@@ -62,11 +62,7 @@ describe('AddressListItem', () => {
   })
 
   test('点击后设置 addressStore 的 currentAddressId', async () => {
-    const { getByTestId } = render(AddressListItem, {
-      props: {
-        addressInfo,
-      },
-    })
+    const { getByTestId } = renderAddressListItem()
     expect(commit).not.toHaveBeenCalled()
 
     await fireEvent.click(getByTestId('item'))
@@ -76,11 +72,7 @@ describe('AddressListItem', () => {
   })
 
   test('长按一秒后抛出 longTouch 事件', async () => {
-    const { getByTestId, emitted } = render(AddressListItem, {
-      props: {
-        addressInfo,
-      },
-    })
+    const { getByTestId, emitted } = renderAddressListItem()
     expect(emitted()).not.toHaveProperty('longTouch')
 
     await fireEvent.touchStart(getByTestId('item'))
@@ -90,11 +82,7 @@ describe('AddressListItem', () => {
   })
 
   test('长按时如果触摸移动则不进行抛出', async () => {
-    const { getByTestId, emitted } = render(AddressListItem, {
-      props: {
-        addressInfo,
-      },
-    })
+    const { getByTestId, emitted } = renderAddressListItem()
     expect(emitted()).not.toHaveProperty('longTouch')
 
     await fireEvent.touchStart(getByTestId('item'))
