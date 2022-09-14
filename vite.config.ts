@@ -15,6 +15,7 @@ export default defineConfig({
     },
     conditions: process.env.VITEST ? ['node'] : [],
   },
+
   plugins: [
     Vue({
       reactivityTransform: true,
@@ -47,10 +48,22 @@ export default defineConfig({
   ],
 
   test: {
+    globals: true,
     environment: 'jsdom',
+    environmentOptions: {
+      console: false,
+    },
     deps: {
       inline: ['vant'],
     },
     setupFiles: `${path.resolve(__dirname, 'test/vitest-setup.ts')}/`,
+    coverage: {
+      include: ['src/**/*'],
+      exclude: ['src/api/**', 'src/network/**', 'src/router/**'],
+      lines: 80,
+      functions: 80,
+      branches: 80,
+      statements: 80,
+    },
   },
 })

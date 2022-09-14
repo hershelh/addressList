@@ -22,6 +22,5 @@
       "~/*": ["src/*"]
     }
   },
-  "exclude": ["dist", "node_modules"],
-  // "files": ["test/vitest-setup.ts"]
+  "exclude": ["dist", "node_modules", "coverage"]
 }

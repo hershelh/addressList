@@ -1,11 +1,10 @@
-import { afterEach, describe, expect, test, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { createTestingPinia } from '@pinia/testing'
+import { useAddressStore } from '~/stores/address'
 import AddressForm from '~/components/AddressForm.vue'
 
 vi.mock('vue-router')
-vi.mock('vuex')
 
 const addressInfo = {
   name: '李先生',
@@ -21,6 +20,19 @@ const renderAddressForm = (isEdit = 'false') => {
     props: {
       isEdit,
     },
+    global: {
+      plugins: [createTestingPinia(
+        isEdit === 'true'
+          ? {
+              initialState: {
+                address: {
+                  addressInfoList: [{ ...addressInfo, addressId: '1' }],
+                  currentAddressId: '1',
+                },
+              },
+            }
+          : undefined)],
+    },
   })
 }
 
@@ -30,15 +42,10 @@ describe('AddressForm', () => {
   })
 
   describe('新增收货地址', () => {
-    test('正确填写表单并提交后分发 store 的 addAddress 事件', async () => {
-      const dispatch = vi.fn()
-      vi.mocked(useStore, {
-        partial: true,
-      }).mockImplementation(() => ({
-        dispatch,
-      }))
+    test('正确填写表单并提交后调用 store 的 addAddress()', async () => {
       const { getByPlaceholderText, getByText, getByRole, getByTestId } = renderAddressForm()
-      expect(dispatch).toHaveBeenCalledTimes(0)
+      const address = useAddressStore()
+      expect(address.addAddress).toHaveBeenCalledTimes(0)
 
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
@@ -49,8 +56,8 @@ describe('AddressForm', () => {
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
 
-      expect(dispatch).toHaveBeenCalledTimes(1)
-      expect(dispatch).toHaveBeenCalledWith('addAddress', addressInfo)
+      expect(address.addAddress).toHaveBeenCalledTimes(1)
+      expect(address.addAddress).toHaveBeenCalledWith(addressInfo)
     })
 
     test('正确填写表单并提交成功后，1 秒后调用 router.back()', async () => {
@@ -59,12 +66,6 @@ describe('AddressForm', () => {
         partial: true,
       }).mockImplementation(() => ({
         back,
-      }))
-      const dispatch = vi.fn()
-      vi.mocked(useStore, {
-        partial: true,
-      }).mockImplementation(() => ({
-        dispatch,
       }))
       const { getByPlaceholderText, getByText, getByRole, getByTestId } = renderAddressForm()
       expect(back).not.toHaveBeenCalled()
@@ -84,19 +85,13 @@ describe('AddressForm', () => {
   })
 
   describe('修改收货地址', () => {
-    test('展示待修改表单的信息', () => {
-      vi.mocked(useStore, {
-        partial: true,
-      }).mockImplementation(() => ({
-        getters: {
-          currentAddressInfo: addressInfo,
-        },
-      }))
+    test('展示待修改表单的信息', async () => {
       const { getByRole, getByDisplayValue, getAllByRole } = renderAddressForm('true')
 
       expect(getByDisplayValue(addressInfo.name)).toBeInTheDocument()
       expect(getByDisplayValue(addressInfo.mobilePhone)).toBeInTheDocument()
       expect(getByDisplayValue(addressInfo.area)).toBeInTheDocument()
+      expect(getByDisplayValue(addressInfo.detailAddress)).toBeInTheDocument()
       expect(getAllByRole('radio')[1]).toBeChecked()
       expect(getAllByRole('radio')[0]).not.toBeChecked()
       expect(getAllByRole('radio')[2]).not.toBeChecked()
@@ -104,70 +99,55 @@ describe('AddressForm', () => {
       expect(getByRole('switch')).toBeChecked()
     })
 
-    test('正确修改表单并提交后分发 store 的 editAddress 事件', async () => {
-      const dispatch = vi.fn()
-      vi.mocked(useStore, {
-        partial: true,
-      }).mockImplementation(() => ({
-        getters: {
-          currentAddressInfo: {
-            name: '测试人',
-            mobilePhone: '13455667788',
-            detailAddress: '羊村',
-            area: '广东省广州市天河区',
-            tag: 0,
-            defaultFlag: false,
-          },
-        },
-        dispatch,
-      }))
+    test('正确修改表单并提交后调用 store 的 editAddress()', async () => {
+      const newAddressInfo = {
+        name: '李华',
+        mobilePhone: '13511334488',
+        detailAddress: '中山路阳光小区11号',
+        area: '北京市北京市东城区',
+        tag: 2,
+        defaultFlag: false,
+      }
       const { getByPlaceholderText, getByText, getByRole, getByTestId } = renderAddressForm('true')
-      expect(dispatch).toHaveBeenCalledTimes(0)
+      const address = useAddressStore()
+      expect(address.editAddress).toHaveBeenCalledTimes(0)
 
-      await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
-      await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
+      await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), newAddressInfo.name)
+      await fireEvent.update(getByPlaceholderText('手机号码'), newAddressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
       await fireEvent.click(screen.getByText('确认'))
-      await fireEvent.update(getByPlaceholderText('详细地址'), addressInfo.detailAddress)
-      await fireEvent.click(getByText('家'))
+      await fireEvent.update(getByPlaceholderText('详细地址'), newAddressInfo.detailAddress)
+      await fireEvent.click(getByText('公司'))
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
 
-      expect(dispatch).toHaveBeenCalledTimes(1)
-      expect(dispatch).toHaveBeenCalledWith('editAddress', addressInfo)
+      expect(address.editAddress).toHaveBeenCalledTimes(1)
+      expect(address.editAddress).toHaveBeenCalledWith({ ...newAddressInfo, addressId: '1' })
     })
 
     test('正确修改表单并提交成功后，1 秒后调用 router.back()', async () => {
+      const newAddressInfo = {
+        name: '李华',
+        mobilePhone: '13511334488',
+        detailAddress: '中山路阳光小区11号',
+        area: '北京市北京市东城区',
+        tag: 2,
+        defaultFlag: false,
+      }
       const back = vi.fn()
       vi.mocked(useRouter, {
         partial: true,
       }).mockImplementation(() => ({
         back,
       }))
-      const dispatch = vi.fn()
-      vi.mocked(useStore, {
-        partial: true,
-      }).mockImplementation(() => ({
-        getters: {
-          currentAddressInfo: {
-            name: '测试人',
-            mobilePhone: '13455667788',
-            detailAddress: '羊村',
-            area: '广东省广州市天河区',
-            tag: 0,
-            defaultFlag: false,
-          },
-        },
-        dispatch,
-      }))
       const { getByPlaceholderText, getByText, getByRole, getByTestId } = renderAddressForm('true')
       expect(back).not.toHaveBeenCalled()
 
-      await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
-      await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
+      await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), newAddressInfo.name)
+      await fireEvent.update(getByPlaceholderText('手机号码'), newAddressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
       await fireEvent.click(screen.getByText('确认'))
-      await fireEvent.update(getByPlaceholderText('详细地址'), addressInfo.detailAddress)
+      await fireEvent.update(getByPlaceholderText('详细地址'), newAddressInfo.detailAddress)
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))

@@ -4,5 +4,15 @@
     "password": "password123456",
     "token": "acbdefgfedbca123"
   },
-  "address": []
+  "address": [
+    {
+      "defaultFlag": false,
+      "name": "eqe",
+      "mobilePhone": "13433221155",
+      "detailAddress": "131",
+      "area": "北京市北京市东城区",
+      "tag": 0,
+      "addressId": "1"
+    }
+  ]
 }

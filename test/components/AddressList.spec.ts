@@ -1,21 +1,22 @@
-import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import { createStore } from 'vuex'
-import type * as Vuex from 'vuex'
+import { createTestingPinia } from '@pinia/testing'
 import { defineComponent } from 'vue'
+import { useAddressStore } from '~/stores/address'
 import AddressList from '~/components/AddressList.vue'
 import type { AddressInfo } from '~/types/addressManagement'
 
 vi.mock('vue-router')
 
 describe('AddressList', () => {
-  interface State {
-    addressInfoList: AddressInfo[]
-  }
-  let store: Vuex.Store<State>
   let mockedAddressInfoList: AddressInfo[] = []
 
   const renderAddressList = (stubs = false) => {
+    const spy = () => {
+      const address = useAddressStore()
+      address.addressInfoList = mockedAddressInfoList
+      return vi.fn().mockResolvedValue('succress')
+    }
+
     if (stubs) {
       const AddressListItem = defineComponent({
         emits: ['longTouch'],
@@ -30,22 +31,23 @@ describe('AddressList', () => {
 
       return render(AddressList, {
         global: {
-          provide: {
-            store,
-          },
           stubs: {
             AddressListItem,
           },
+          plugins: [createTestingPinia({
+            createSpy: spy,
+          })],
         },
       })
     }
     else {
       return render(AddressList, {
         global: {
-          provide: {
-            store,
-          },
+          plugins: [createTestingPinia({
+            createSpy: spy,
+          })],
         },
+
       })
     }
   }
@@ -80,23 +82,10 @@ describe('AddressList', () => {
         defaultFlag: false,
       },
     ]
+  })
 
-    store = createStore<State>({
-      state: {
-        addressInfoList: [],
-      },
-      actions: {
-        getAddressInfoList({ state }) {
-          state.addressInfoList.length = 0
-          state.addressInfoList.push(...mockedAddressInfoList)
-        },
-
-        deleteAddress({ state }, id: string) {
-          const index = state.addressInfoList.findIndex(({ addressId }) => (addressId === id))
-          state.addressInfoList.splice(index, 1)
-        },
-      },
-    })
+  afterEach(() => {
+    vi.clearAllMocks()
   })
 
   test('获取并展示地址列表信息', async () => {
@@ -108,8 +97,8 @@ describe('AddressList', () => {
   test('获取地址列表后，会抛出 fetch 事件，如果列表不为空，参数为 true', async () => {
     const { emitted } = renderAddressList()
 
-    await waitFor(() => expect(emitted('fetch')).toHaveLength(2))
-    expect(emitted('fetch')[1]).toEqual([true])
+    await waitFor(() => expect(emitted('fetch')).toHaveLength(1))
+    expect(emitted('fetch')[0]).toEqual([true])
   })
 
   test('获取地址列表后，会抛出 fetch 事件，如果列表为空，参数为 false', async () => {
@@ -122,38 +111,49 @@ describe('AddressList', () => {
 
   test('地址列表项变化时，会抛出 fetch 事件，如果列表项数减少到 0 ，事件参数为 false ，否则为 true', async () => {
     const { emitted } = renderAddressList()
-    await waitFor(() => expect(emitted('fetch')).toHaveLength(2))
+    const address = useAddressStore()
+    await waitFor(() => expect(emitted('fetch')).toHaveLength(1))
 
-    store.state.addressInfoList.pop()
+    address.addressInfoList.pop()
+    await waitFor(() => expect(emitted('fetch')).toHaveLength(2))
+    expect(emitted('fetch')[1]).toEqual([true])
+
+    address.addressInfoList.pop()
     await waitFor(() => expect(emitted('fetch')).toHaveLength(3))
     expect(emitted('fetch')[2]).toEqual([true])
 
-    store.state.addressInfoList.pop()
+    address.addressInfoList.pop()
     await waitFor(() => expect(emitted('fetch')).toHaveLength(4))
-    expect(emitted('fetch')[3]).toEqual([true])
-
-    store.state.addressInfoList.pop()
-    await waitFor(() => expect(emitted('fetch')).toHaveLength(5))
-    expect(emitted('fetch')[4]).toEqual([false])
+    expect(emitted('fetch')[3]).toEqual([false])
   })
 
   test('监听到 Item 组件的 longTouch 事件后弹出弹窗，点击确定即可删除该 Item', async () => {
     mockedAddressInfoList.splice(0, 2)
     const { findAllByTestId, queryAllByTestId } = renderAddressList(true)
+    const address = useAddressStore()
+    vi.mocked(address.deleteAddress).mockImplementation(vi.fn(async () => {
+      address.addressInfoList = []
+    }))
     expect(await findAllByTestId('item')).toHaveLength(1)
 
     await fireEvent.click(screen.getByText('确认'))
 
+    expect(address.deleteAddress).toHaveBeenCalledWith('3')
     expect(queryAllByTestId('item')).toHaveLength(0)
   })
 
   test('监听到 Item 组件的 longTouch 事件后弹出弹窗，点击取消不会删除该列表项', async () => {
     mockedAddressInfoList.splice(0, 2)
     const { findAllByTestId, queryAllByTestId } = renderAddressList(true)
+    const address = useAddressStore()
+    vi.mocked(address.deleteAddress).mockImplementation(vi.fn(async () => {
+      address.addressInfoList = []
+    }))
     expect(await findAllByTestId('item')).toHaveLength(1)
 
     await fireEvent.click(screen.getByText('取消'))
 
+    expect(address.deleteAddress).not.toHaveBeenCalled()
     expect(queryAllByTestId('item')).toHaveLength(1)
   })
 })

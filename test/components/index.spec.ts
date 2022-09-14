@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { render } from '@testing-library/vue'
 import { useRouter } from 'vue-router'
 import Index from '~/pages/index.vue'

@@ -1,8 +1,4 @@
-import matchers from '@testing-library/jest-dom/matchers'
-import { afterEach, beforeEach, expect, vi } from 'vitest'
-import { cleanup } from '@testing-library/vue'
-
-expect.extend(matchers)
+import '@testing-library/jest-dom'
 
 beforeEach(() => {
   vi.useFakeTimers({
@@ -11,6 +7,5 @@ beforeEach(() => {
 })
 
 afterEach(() => {
-  cleanup()
   vi.useRealTimers()
 })

@@ -1,4 +1,3 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'

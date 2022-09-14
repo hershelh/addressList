@@ -5,7 +5,7 @@ import { Toast } from 'vant'
 import type { AreaColumnOption } from 'vant'
 import { useRouter } from 'vue-router'
 import { useAddressStore } from '~/stores/address'
-import type { AddressInfo } from '~/types/addressManagement'
+import type { AddressForm, AddressInfo } from '~/types/addressManagement'
 
 const props = defineProps<{
   isEdit: string
@@ -14,8 +14,7 @@ const props = defineProps<{
 const router = useRouter()
 const store = useAddressStore()
 
-const addressForm = ref<AddressInfo>({
-  addressId: '',
+const addressForm = ref<AddressForm>({
   name: '',
   mobilePhone: '',
   detailAddress: '',
@@ -69,7 +68,10 @@ const submitAddressForm = async () => {
 
   if (props.isEdit === 'true') {
     try {
-      await store.editAddress(addressForm.value)
+      await store.editAddress({
+        ...addressForm.value,
+        addressId: store.currentAddressId,
+      })
       Toast('保存成功')
       setTimeout(() => {
         router.back()

@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vitest/globals"]
+  },
+  "include": ["*/**/*.spec.ts", "./vitest-setup.ts", "../shims.d.ts"],
+}

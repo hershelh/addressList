@@ -1,19 +1,15 @@
-import { afterEach, describe, expect, test, vi } from 'vitest'
 import { fireEvent, render } from '@testing-library/vue'
+import type * as VueRouter from 'vue-router'
+import { createTestingPinia } from '@pinia/testing'
 import AddressListItem from '~/components/AddressListItem.vue'
 import { encodePhoneNumber } from '~/utils'
+import { useAddressStore } from '~/stores/address'
 
 const push = vi.fn()
-vi.mock('vue-router', () => ({
+vi.mock('vue-router', async () => ({
+  ...await vi.importActual<typeof VueRouter>('vue-router'),
   useRouter: () => ({
     push,
-  }),
-}))
-
-const commit = vi.fn()
-vi.mock('vuex', () => ({
-  useStore: () => ({
-    commit,
   }),
 }))
 
@@ -32,6 +28,9 @@ const renderAddressListItem = () => {
     props: {
       addressInfo,
     },
+    global: {
+      plugins: [createTestingPinia()],
+    },
   })
 }
 
@@ -41,14 +40,16 @@ describe('AddressListItem', () => {
   })
 
   test('展示地址信息', () => {
-    const { html } = renderAddressListItem()
+    const { queryByText, getByText } = renderAddressListItem()
 
-    expect(html()).toContain(addressInfo.name)
-    expect(html()).toContain(encodePhoneNumber(addressInfo.mobilePhone))
-    expect(html()).toContain(addressInfo.detailAddress)
-    expect(html()).toContain(addressInfo.area)
-    expect(html()).toContain(['', '家', ' 公司', '学校'][addressInfo.tag])
-    expect(html()).toContain(addressInfo.defaultFlag ? '默认' : '')
+    expect(getByText(addressInfo.name)).toBeInTheDocument()
+    expect(getByText(encodePhoneNumber(addressInfo.mobilePhone))).toBeInTheDocument()
+    expect(getByText(addressInfo.area)).toBeInTheDocument()
+    expect(getByText(addressInfo.detailAddress)).toBeInTheDocument()
+    expect(getByText('家')).toBeInTheDocument()
+    expect(queryByText('公司')).toBeNull()
+    expect(queryByText('学校')).toBeNull()
+    expect(queryByText('默认')).toBeInTheDocument()
   })
 
   test('点击后调用 router.push()', async () => {
@@ -61,14 +62,14 @@ describe('AddressListItem', () => {
     expect(push).toHaveBeenCalledWith('/address/editAddress?isEdit=true')
   })
 
-  test('点击后设置 addressStore 的 currentAddressId', async () => {
+  test('点击后设置 store 的 currentAddressId', async () => {
     const { getByTestId } = renderAddressListItem()
-    expect(commit).not.toHaveBeenCalled()
+    const address = useAddressStore()
+    expect(address.currentAddressId).toBe('')
 
     await fireEvent.click(getByTestId('item'))
 
-    expect(commit).toHaveBeenCalledTimes(1)
-    expect(commit).toHaveBeenCalledWith('setCurrentAddressId', addressInfo.addressId)
+    expect(address.currentAddressId).toBe(addressInfo.addressId)
   })
 
   test('长按一秒后抛出 longTouch 事件', async () => {

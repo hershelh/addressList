@@ -3,7 +3,6 @@ import type { AxiosResponse } from 'axios'
 import { Toast } from 'vant'
 import { router } from '~/router'
 import type { ResponseType } from '~/types/common'
-""
 
 export const service = axios.create({
   baseURL: 'http://localhost:5001',

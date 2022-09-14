@@ -1,4 +1,3 @@
-import { afterEach, describe, expect, test, vi } from 'vitest'
 import { fireEvent, render, waitFor } from '@testing-library/vue'
 import type * as VueRouter from 'vue-router'
 import LoginForm from '~/components/LoginForm.vue'
@@ -24,7 +23,6 @@ describe('LoginForm', () => {
 
     afterEach(() => {
       localStorage.removeItem('token')
-      vi.clearAllMocks()
     })
 
     test('输入用户名和密码进行登录可以登录成功, 将 token 存储到本地存储中', async () => {
@@ -65,6 +63,19 @@ describe('LoginForm', () => {
 
       // await waitFor(() => expect(getByTestId('button')).toBeDisabled())
       expect(getByTestId('button')).toBeDisabled()
+    })
+
+    test('提交表单失败后按钮被启用', async () => {
+      vi.mocked(loginAPI.login).mockImplementation(vi.fn().mockRejectedValue('rejected'))
+      const { getByPlaceholderText, getByTestId } = render(LoginForm)
+      expect(getByTestId('button')).toBeEnabled()
+
+      await fireEvent.update(getByPlaceholderText('用户名'), 'jeanmay')
+      await fireEvent.update(getByPlaceholderText('密码'), 'password123456')
+      await fireEvent.submit(getByTestId('form'))
+
+      // await waitFor(() => expect(getByTestId('button')).toBeDisabled())
+      expect(getByTestId('button')).toBeEnabled()
     })
   })
 
