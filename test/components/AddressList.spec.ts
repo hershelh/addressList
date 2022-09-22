@@ -12,9 +12,10 @@ describe('AddressList', () => {
 
   const renderAddressList = (stubs = false) => {
     const spy = () => {
-      const address = useAddressStore()
-      address.addressInfoList = mockedAddressInfoList
-      return vi.fn().mockResolvedValue('succress')
+      return vi.fn(async () => {
+        const address = useAddressStore()
+        address.addressInfoList.push(...mockedAddressInfoList)
+      })
     }
 
     if (stubs) {
@@ -112,11 +113,7 @@ describe('AddressList', () => {
   test('地址列表项变化时，会抛出 fetch 事件，如果列表项数减少到 0 ，事件参数为 false ，否则为 true', async () => {
     const { emitted } = renderAddressList()
     const address = useAddressStore()
-    await waitFor(() => expect(emitted('fetch')).toHaveLength(1))
-
-    address.addressInfoList.pop()
     await waitFor(() => expect(emitted('fetch')).toHaveLength(2))
-    expect(emitted('fetch')[1]).toEqual([true])
 
     address.addressInfoList.pop()
     await waitFor(() => expect(emitted('fetch')).toHaveLength(3))
@@ -124,7 +121,11 @@ describe('AddressList', () => {
 
     address.addressInfoList.pop()
     await waitFor(() => expect(emitted('fetch')).toHaveLength(4))
-    expect(emitted('fetch')[3]).toEqual([false])
+    expect(emitted('fetch')[3]).toEqual([true])
+
+    address.addressInfoList.pop()
+    await waitFor(() => expect(emitted('fetch')).toHaveLength(5))
+    expect(emitted('fetch')[4]).toEqual([false])
   })
 
   test('监听到 Item 组件的 longTouch 事件后弹出弹窗，点击确定即可删除该 Item', async () => {

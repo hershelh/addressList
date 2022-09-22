@@ -1,18 +1,55 @@
 {
   "user": {
-    "username": "jeanmay",
-    "password": "password123456",
-    "token": "acbdefgfedbca123"
+      "username": "jeanmay",
+      "password": "password123456",
+      "token": "acbdefgfedbca123"
   },
   "address": [
-    {
-      "defaultFlag": false,
-      "name": "eqe",
-      "mobilePhone": "13433221155",
-      "detailAddress": "131",
-      "area": "北京市北京市东城区",
-      "tag": 0,
-      "addressId": "1"
-    }
+      {
+          "addressId": "1",
+          "name": "黄先生",
+          "mobilePhone": "13544117788",
+          "area": "广东省广州市天河区",
+          "detailAddress": "中山路光明小区23号",
+          "tag": 0, 
+          "defaultFlag": true
+      },
+      {
+          "addressId": "2",
+          "name": "李先生",
+          "mobilePhone": "13511448877",
+          "area": "广东省广州市天河区",
+          "detailAddress": "中山路希望小区23号",
+          "tag": 1, 
+          "defaultFlag": false
+      },
+      {
+          "addressId": "3",
+          "name": "方先生",
+          "mobilePhone": "13544112288",
+          "area": "广东省广州市天河区",
+          "detailAddress": "中山路阳光小区23号",
+          "tag": 2, 
+          "defaultFlag": false
+      },
+      {
+          "addressId": "4",
+          "name": "图图",
+          "mobilePhone": "13544113388",
+          "area": "广东省广州市天河区",
+          "detailAddress": "中山路光明小区23号",
+          "tag": 3, 
+          "defaultFlag": false
+      },
+      {
+          "addressId": "5",
+          "name": "牛爷爷",
+          "mobilePhone": "13544116688",
+          "area": "广东省广州市天河区",
+          "detailAddress": "中山路光明小区15号",
+          "tag": 4, 
+          "defaultFlag": false
+      }
+
   ]
 }
