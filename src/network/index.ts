@@ -1,8 +1,5 @@
-import axios from 'axios'
 import type { AxiosResponse } from 'axios'
-import { Toast } from 'vant'
-import { router } from '~/router'
-import type { ResponseType } from '~/types/common'
+import { router } from '~/main'
 
 export const service = axios.create({
   baseURL: 'http://localhost:5001',
@@ -23,6 +20,11 @@ service.interceptors.request.use(
 )
 const jumpToLogin = () => {
   router.replace('/')
+}
+interface ResponseType<T = null> {
+  code: number
+  data: T
+  msg: string
 }
 
 service.interceptors.response.use(

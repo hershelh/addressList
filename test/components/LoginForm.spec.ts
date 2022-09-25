@@ -1,7 +1,6 @@
-import { fireEvent, render, waitFor } from '@testing-library/vue'
 import type * as VueRouter from 'vue-router'
 import LoginForm from '~/components/LoginForm.vue'
-import * as loginAPI from '~/api/userManagement'
+import * as loginAPI from '~/network/apis/userManagement'
 
 const replace = vi.fn()
 vi.mock('vue-router', async () => ({

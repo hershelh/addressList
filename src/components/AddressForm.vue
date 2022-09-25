@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { areaList } from '@vant/area-data'
-import { Toast } from 'vant'
 import type { AreaColumnOption } from 'vant'
-import { useRouter } from 'vue-router'
-import { useAddressStore } from '~/stores/address'
 import type { AddressForm, AddressInfo } from '~/types/addressManagement'
 
 const props = defineProps<{

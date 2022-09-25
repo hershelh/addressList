@@ -1,7 +1,5 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import { useRouter } from 'vue-router'
-import { defineComponent } from 'vue'
-import ShipAddress from '~/pages/addressManagement/shipAddress.vue'
+import type { Screen } from '@testing-library/vue'
+import ShipAddress from '~/views/address/shipAddress.vue'
 
 vi.mock('vue-router')
 
@@ -49,7 +47,7 @@ describe('shipAddress', () => {
     expect(replace).not.toHaveBeenCalled()
 
     await fireEvent.click(getByText('退出登录'))
-    await fireEvent.click(screen.getByText('确认'))
+    await fireEvent.click((screen as unknown as Screen).getByText('确认'))
     vi.advanceTimersByTime(2000)
 
     expect(localStorage.getItem('token')).toBeNull()

@@ -17,33 +17,48 @@ export default defineConfig({
   },
 
   plugins: [
-    Vue({
-      reactivityTransform: true,
-    }),
+    Vue(),
 
     Pages({
-      dirs: 'src/pages',
+      dirs: 'src/views',
+      exclude: ['**/components/*.vue'],
+      onRoutesGenerated(routes) {
+        routes.push({ path: '/address', redirect: '/address/shipAddress' })
+      },
     }),
 
     AutoImport({
       imports: [
         'vue',
-        'vue/macros',
         'vue-router',
-        '@vueuse/core',
+        'pinia',
+        {
+          'vue-router': ['createRouter', 'createWebHistory'],
+          'axios': [
+            ['default', 'axios'],
+          ],
+          '@testing-library/vue': [
+            'fireEvent',
+            'render',
+            'waitFor',
+            'screen',
+          ],
+          '@pinia/testing': ['createTestingPinia'],
+          'vant': ['Toast', 'Dialog'],
+        },
       ],
-      dts: true,
       dirs: [
-        './src/composables',
-        './src/store/**',
+        './src/network/**',
+        './src/stores/**',
+        './src/utils/**',
       ],
       vueTemplate: true,
     }),
 
     Components({
       resolvers: [VantResolver()],
-      dirs: ['src/components', 'src/pages'],
-      dts: true,
+      dirs: ['src/components', 'src/views'],
+      include: [/\.vue$/, /\.vue\?vue/],
     }),
   ],
 
@@ -53,10 +68,10 @@ export default defineConfig({
     deps: {
       inline: ['vant'],
     },
-    setupFiles: `${path.resolve(__dirname, 'test/vitest-setup.ts')}/`,
+    setupFiles: path.resolve(__dirname, 'test/vitest-setup'),
     coverage: {
       include: ['src/**/*'],
-      exclude: ['src/api/**', 'src/network/**', 'src/router/**'],
+      exclude: ['src/network/**'],
       lines: 80,
       functions: 80,
       branches: 80,

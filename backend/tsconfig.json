@@ -3,9 +3,9 @@
     "target": "es2017",
     "module": "ESNext",
     "moduleResolution": "node",
-    "esModuleInterop": true,                        
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,    
+    "strict": true
   },
   "exclude": ["dist", "node_modules"]
 }

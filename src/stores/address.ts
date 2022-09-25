@@ -1,11 +1,9 @@
-import { acceptHMRUpdate, defineStore } from 'pinia'
-import type { AddressForm, AddressInfo } from '../types/addressManagement'
+import type { AddressForm, AddressInfo } from '~/types/addressManagement'
 import {
   addAddress as add,
   deleteAddress as del,
   editAddress as edit,
-  getAddressList,
-} from '~/api/addressManagement'
+} from '~/network/apis/addressManagement'
 
 export const useAddressStore = defineStore('address', () => {
   const addressInfoList = ref<AddressInfo[]>([])

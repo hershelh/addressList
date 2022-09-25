@@ -1,7 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import { createTestingPinia } from '@pinia/testing'
-import { defineComponent } from 'vue'
-import { useAddressStore } from '~/stores/address'
+import type { Screen } from '@testing-library/vue'
 import AddressList from '~/components/AddressList.vue'
 import type { AddressInfo } from '~/types/addressManagement'
 
@@ -137,7 +134,7 @@ describe('AddressList', () => {
     }))
     expect(await findAllByTestId('item')).toHaveLength(1)
 
-    await fireEvent.click(screen.getByText('确认'))
+    await fireEvent.click((screen as unknown as Screen).getByText('确认'))
 
     expect(address.deleteAddress).toHaveBeenCalledWith('3')
     expect(queryAllByTestId('item')).toHaveLength(0)
@@ -152,7 +149,7 @@ describe('AddressList', () => {
     }))
     expect(await findAllByTestId('item')).toHaveLength(1)
 
-    await fireEvent.click(screen.getByText('取消'))
+    await fireEvent.click((screen as unknown as Screen).getByText('取消'))
 
     expect(address.deleteAddress).not.toHaveBeenCalled()
     expect(queryAllByTestId('item')).toHaveLength(1)

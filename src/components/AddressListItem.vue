@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { useAddressStore } from '~/stores/address'
 import type { AddressInfo } from '~/types/addressManagement'
-import { encodePhoneNumber } from '~/utils'
 
 const props = defineProps<{
   addressInfo: AddressInfo
@@ -19,7 +16,7 @@ let loop: number
 const touchStart = () => {
   loop = setTimeout(() => {
     emits('longTouch')
-  }, 1000)
+  }, 1000) as unknown as number
 }
 
 const clearTimer = () => {
@@ -30,6 +27,8 @@ const toEditAddress = () => {
   addressStore.currentAddressId = props.addressInfo.addressId
   router.push('/address/editAddress?isEdit=true')
 }
+
+const mobilePhone = computed(() => encodePhoneNumber(`${props.addressInfo.mobilePhone}`))
 </script>
 
 <template>
@@ -74,7 +73,7 @@ const toEditAddress = () => {
         <span
           class="address__body__detail__phone-number"
         >
-          {{ encodePhoneNumber(`${props.addressInfo.mobilePhone}`) }}
+          {{ mobilePhone }}
         </span>
       </div>
     </div>

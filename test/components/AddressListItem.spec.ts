@@ -1,9 +1,5 @@
-import { fireEvent, render } from '@testing-library/vue'
 import type * as VueRouter from 'vue-router'
-import { createTestingPinia } from '@pinia/testing'
 import AddressListItem from '~/components/AddressListItem.vue'
-import { encodePhoneNumber } from '~/utils'
-import { useAddressStore } from '~/stores/address'
 
 const push = vi.fn()
 vi.mock('vue-router', async () => ({

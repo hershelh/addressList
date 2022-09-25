@@ -1,9 +1,8 @@
-import { service } from '../network'
 import type {
   AddAddress,
   AddAddressResponseData,
   EditAddress, GetAddressListResponseData,
-} from '../types/addressManagement'
+} from '~/types/addressManagement'
 
 export function addAddress(params: AddAddress): Promise<AddAddressResponseData> {
   return service.post('/address/add', params)

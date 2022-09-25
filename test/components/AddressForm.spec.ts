@@ -1,7 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
-import { useRouter } from 'vue-router'
-import { createTestingPinia } from '@pinia/testing'
-import { useAddressStore } from '~/stores/address'
+import type { Screen } from '@testing-library/vue'
 import AddressForm from '~/components/AddressForm.vue'
 
 vi.mock('vue-router')
@@ -50,7 +47,7 @@ describe('AddressForm', () => {
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
-      await fireEvent.click(screen.getByText('确认'))
+      await fireEvent.click((screen as unknown as Screen).getByText('确认'))
       await fireEvent.update(getByPlaceholderText('详细地址'), addressInfo.detailAddress)
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
@@ -73,7 +70,7 @@ describe('AddressForm', () => {
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), addressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), addressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
-      await fireEvent.click(screen.getByText('确认'))
+      await fireEvent.click((screen as unknown as Screen).getByText('确认'))
       await fireEvent.update(getByPlaceholderText('详细地址'), addressInfo.detailAddress)
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
@@ -115,7 +112,7 @@ describe('AddressForm', () => {
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), newAddressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), newAddressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
-      await fireEvent.click(screen.getByText('确认'))
+      await fireEvent.click((screen as unknown as Screen).getByText('确认'))
       await fireEvent.update(getByPlaceholderText('详细地址'), newAddressInfo.detailAddress)
       await fireEvent.click(getByText('公司'))
       await fireEvent.click(getByRole('switch'))
@@ -146,7 +143,7 @@ describe('AddressForm', () => {
       await fireEvent.update(getByPlaceholderText('请填写收货人姓名'), newAddressInfo.name)
       await fireEvent.update(getByPlaceholderText('手机号码'), newAddressInfo.mobilePhone)
       await fireEvent.click(getByPlaceholderText('点击选择省市区'))
-      await fireEvent.click(screen.getByText('确认'))
+      await fireEvent.click((screen as unknown as Screen).getByText('确认'))
       await fireEvent.update(getByPlaceholderText('详细地址'), newAddressInfo.detailAddress)
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))

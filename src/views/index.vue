@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { Toast } from 'vant'
-import { useRouter } from 'vue-router'
-import LoginForm from '~/components/LoginForm.vue'
-
 const router = useRouter()
 
 if (localStorage.getItem('token')) {

@@ -4,6 +4,6 @@
   "exclude": [],
   "compilerOptions": {
     "types": ["cypress"],
-    "isolatedModules": false,
+    "isolatedModules": false
   }
 }

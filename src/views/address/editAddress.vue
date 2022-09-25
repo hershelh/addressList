@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import AddressForm from '~/components/AddressForm.vue'
-
 const route = useRoute()
 const router = useRouter()
 

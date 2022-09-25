@@ -1,14 +1,6 @@
-import { createPinia, setActivePinia } from 'pinia'
 import type { AddressInfo } from '~/types/addressManagement'
-import { useAddressStore } from '~/stores/address'
-import {
-  addAddress,
-  deleteAddress,
-  editAddress,
-  getAddressList,
-} from '~/api/addressManagement'
 
-vi.mock('~/api/addressManagement')
+vi.mock('~/network/apis/addressManagement')
 
 describe('Address Store', () => {
   let mockAddressInfoList: AddressInfo[] = []

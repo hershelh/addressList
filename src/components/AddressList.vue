@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { Dialog, Toast } from 'vant'
-import AddressListItem from './AddressListItem.vue'
-import { useAddressStore } from '~/stores/address'
-
 const emits = defineEmits<{
   (e: 'fetch', fetchStatus: boolean): void
 }>()

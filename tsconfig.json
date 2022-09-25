@@ -16,11 +16,19 @@
     "forceConsistentCasingInFileNames": true,
     "types": [
       "vite/client",
-      "vite-plugin-pages/client"
+      "vite-plugin-pages/client",
+      "vitest/globals"
     ],
     "paths": {
       "~/*": ["src/*"]
     }
   },
+  "include": [
+    "test/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.vue",
+    "*.d.ts"
+  ],
   "exclude": ["dist", "node_modules", "coverage"]
 }

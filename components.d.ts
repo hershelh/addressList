@@ -7,13 +7,16 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    '[...all]': typeof import('./src/views/[...all].vue')['default']
     AddressForm: typeof import('./src/components/AddressForm.vue')['default']
     AddressList: typeof import('./src/components/AddressList.vue')['default']
     AddressListItem: typeof import('./src/components/AddressListItem.vue')['default']
-    Ex: typeof import('./src/components/Ex.vue')['default']
+    EditAddress: typeof import('./src/views/address/editAddress.vue')['default']
     LoginForm: typeof import('./src/components/LoginForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ShipAddress: typeof import('./src/views/address/shipAddress.vue')['default']
+    Undefined: typeof import('./src/views/index.vue')['default']
     VanArea: typeof import('vant/es')['Area']
     VanButton: typeof import('vant/es')['Button']
     VanCellGroup: typeof import('vant/es')['CellGroup']

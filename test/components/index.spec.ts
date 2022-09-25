@@ -1,6 +1,4 @@
-import { render } from '@testing-library/vue'
-import { useRouter } from 'vue-router'
-import Index from '~/pages/index.vue'
+import Index from '~/views/index.vue'
 
 vi.mock('vue-router')
 
