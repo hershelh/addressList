@@ -68,10 +68,9 @@ const submitAddressForm = async () => {
         ...addressForm.value,
         addressId: store.currentAddressId,
       })
+
+      router.back()
       Toast('保存成功')
-      setTimeout(() => {
-        router.back()
-      }, 1000)
     }
     catch {
       isSubmitButtonDisabled.value = false
@@ -80,10 +79,9 @@ const submitAddressForm = async () => {
   else {
     try {
       await store.addAddress(addressForm.value)
+
+      router.back()
       Toast('添加成功')
-      setTimeout(() => {
-        router.back()
-      }, 1000)
     }
     catch {
       isSubmitButtonDisabled.value = false

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AddressList from '~/components/AddressList.vue'
+
 const router = useRouter()
 
 // 对地址列表数据的获取状态：为 true 表示获取成功，为 false 表示获取失败或列表为空，为 null 表示正在获取

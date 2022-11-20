@@ -32,8 +32,7 @@ describe('LoginForm', () => {
       await fireEvent.update(getByPlaceholderText('密码'), 'password123456')
       await fireEvent.submit(getByTestId('form'))
 
-      // await waitFor(() => expect(localStorage.getItem('token')).toBe('acbdefgfedbca123'))
-      expect(localStorage.getItem('token')).toBe('acbdefgfedbca123')
+      await waitFor(() => expect(localStorage.getItem('token')).toBe('acbdefgfedbca123'))
     })
 
     test('输入用户名和密码进行登录可以登录成功, 1 秒后调用 router.replace()', async () => {
@@ -44,10 +43,9 @@ describe('LoginForm', () => {
       await fireEvent.update(getByPlaceholderText('密码'), 'password123456')
       await fireEvent.submit(getByTestId('form'))
       // 确保定时器已调用
-      // await waitFor(() => expect(localStorage.getItem('token')).not.toBeNull())
+      await waitFor(() => expect(localStorage.getItem('token')).not.toBeNull())
       vi.advanceTimersByTime(1000)
 
-      // await waitFor(() => expect(replace).toHaveBeenCalledTimes(1))
       expect(replace).toHaveBeenCalledTimes(1)
       expect(replace).toHaveBeenCalledWith('/address/shipAddress')
     })
@@ -60,8 +58,7 @@ describe('LoginForm', () => {
       await fireEvent.update(getByPlaceholderText('密码'), 'password123456')
       await fireEvent.submit(getByTestId('form'))
 
-      // await waitFor(() => expect(getByTestId('button')).toBeDisabled())
-      expect(getByTestId('button')).toBeDisabled()
+      await waitFor(() => expect(getByTestId('button')).toBeDisabled())
     })
 
     test('提交表单失败后按钮被启用', async () => {
@@ -73,7 +70,6 @@ describe('LoginForm', () => {
       await fireEvent.update(getByPlaceholderText('密码'), 'password123456')
       await fireEvent.submit(getByTestId('form'))
 
-      // await waitFor(() => expect(getByTestId('button')).toBeDisabled())
       expect(getByTestId('button')).toBeEnabled()
     })
   })

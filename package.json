@@ -4,6 +4,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite --port 3334 --open",
+    "start:api": "cd backend & pnpm run start:api",
     "lint": "eslint .",
     "type-check": "vue-tsc --noEmit",
     "preview": "vite preview",

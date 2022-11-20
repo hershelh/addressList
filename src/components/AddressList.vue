@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AddressListItem from './AddressListItem.vue'
+
 const emits = defineEmits<{
   (e: 'fetch', fetchStatus: boolean): void
 }>()

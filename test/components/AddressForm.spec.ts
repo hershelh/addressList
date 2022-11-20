@@ -53,7 +53,7 @@ describe('AddressForm', () => {
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
 
-      expect(address.addAddress).toHaveBeenCalledTimes(1)
+      await waitFor(() => expect(address.addAddress).toHaveBeenCalledTimes(1))
       expect(address.addAddress).toHaveBeenCalledWith(addressInfo)
     })
 
@@ -75,8 +75,9 @@ describe('AddressForm', () => {
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
-      vi.advanceTimersByTime(1000)
+      // vi.advanceTimersByTime(1000)
 
+      await waitFor(() => { (screen as unknown as Screen).getByText('添加成功') })
       expect(back).toHaveBeenCalledTimes(1)
     })
   })
@@ -118,7 +119,7 @@ describe('AddressForm', () => {
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
 
-      expect(address.editAddress).toHaveBeenCalledTimes(1)
+      await waitFor(() => expect(address.editAddress).toHaveBeenCalledTimes(1))
       expect(address.editAddress).toHaveBeenCalledWith({ ...newAddressInfo, addressId: '1' })
     })
 
@@ -148,8 +149,8 @@ describe('AddressForm', () => {
       await fireEvent.click(getByText('家'))
       await fireEvent.click(getByRole('switch'))
       await fireEvent.submit(getByTestId('form'))
-      vi.advanceTimersByTime(1000)
 
+      await waitFor(() => { (screen as unknown as Screen).getByText('保存成功') })
       expect(back).toHaveBeenCalledTimes(1)
     })
   })
@@ -178,7 +179,7 @@ describe('AddressForm', () => {
 
       await fireEvent.submit(getByTestId('form'))
 
-      expect(getByText('请填写收货人姓名')).toBeInTheDocument()
+      await waitFor(() => expect(getByText('请填写收货人姓名')).toBeInTheDocument())
       expect(getByText('请输入正确的手机号码')).toBeInTheDocument()
       expect(getByText('请选择所在地区')).toBeInTheDocument()
       expect(getByText('请输入详细地址')).toBeInTheDocument()
